@@ -6,7 +6,7 @@ body {
     min-height: 100vh;
     flex-direction: column;
     margin: 0;
-    background-image: url("./images/body.jpg") no-repeat;
+    background-image: url("./images/body.jpg");
   }
 header, footer{
     display: flex;
@@ -51,6 +51,38 @@ header, footer, #main{
     width: 250px;
     padding: 20px;
     text-align: center;
+    background: white;
+    margin: 10px;
+    position: relative;
+    background:#f6f8e7fa;
+
+}
+
+.favorite{
+    position: absolute;;
+    bottom:0;
+    width: 100%;
+    left: 0;
+    background: #88d7b8;
+    padding:10px;
+    display:none;
+    cursor: pointer;
+}
+
+.favIcon{
+    margin-left:5px;
+    color:white;
+}
+.book:hover .favorite{
+    display:block;
+}
+
+.hidden.favicon{
+    color:#27624e;
+}
+
+.hidden{
+    display:hidden;
 }
 
 @media screen and (max-width: 575px) {

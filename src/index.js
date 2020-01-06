@@ -4,25 +4,29 @@ class Books {
         this.search = document.querySelector("#search");
         this.main = document.querySelector("#books");
 
+        this.favoriteList = localStorage.getItem("favoriteList")
+        ? JSON.parse(localStorage.getItem("favoriteList"))
+        : {};
+
         this.searchBooks();
     }
 
     searchBooks(){
         const self = this;
         this.search.addEventListener("click", e => {
-            self.getBooks(1);
+            self.getBooks();
         });
     }  
-    getBooks(page) {
-        const self = this;
 
-        // books.innerHTML = "";
+    getBooks() {
+        const self = this;
     
         let search = searchText.value.split(" ").join("+");
-        fetch(`https://openlibrary.org/search.json?q=${search}&page=${page}`)
+        fetch(`https://openlibrary.org/search.json?q=${search}&limit=10`)
         .then(r => r.json())
         .then(r => {
         const books = r.docs;
+        console.log(books);
         const bookItems = [];
         books.map(item => {
             // let subject = item.subject
@@ -32,23 +36,21 @@ class Books {
             let author = item.author_name ? item.author_name.join(", ") : "no data";
     
             bookItems.push({
+                id: item.key,
                 title: item.title,
                 author: author,
                 published: published
             });
     
-            self.addBooks(  bookItems);
+            self.addBooks(bookItems);
         });
-        
-        console.log(bookItems);
-        const num = Math.ceil(r.numFound / 100);
-            this.addPagination(num, page);
+
         });
     }
 
     addBooks(books) {
         const self = this;
-        // console.log(books)
+        this.main.textContent = "";
         books.map(book => {
             const div = document.createElement("div");
             div.setAttribute("class", "book");
@@ -58,61 +60,64 @@ class Books {
             author.setAttribute("class", "author");
             const year = document.createElement("p");
             year.setAttribute("class", "year");
+            const favorites = document.createElement("div");
+            favorites.setAttribute("class", "favorite");
+            favorites.setAttribute("data-id", book.id);
+            favorites.setAttribute("data-type", "off");
+            const addFav = document.createElement("span");
+            addFav.setAttribute("class", "addFav");
+            const favIcon = document.createElement("span");
+            favIcon.setAttribute("class", "favIcon");
+            
 
+            hidden.textContent = book.id;
             title.textContent = book.title;
             author.textContent = book.author;
             year.textContent = book.published;
+            addFav.textContent = "add to favorites";
+            favIcon.innerHTML = "&#9733;";
 
+            if (book.id in this.favoriteList){
+                favIcon.style.color = "#27624e";
+                favorites.style.display = "block";
+            }
+
+            favorites.appendChild(addFav);
+            favorites.appendChild(favIcon);
             div.appendChild(author);
             div.appendChild(title);
             div.appendChild(year);
+            div.appendChild(favorites);
             this.main.appendChild(div);
 
+            favorites.addEventListener("click", e => {
+                console.log(favorites)
+                if (favorites.getAttribute("data-type") === "off"){
+                    favIcon.style.color = "#27624e";
+                    favorites.setAttribute("data-type", "on");
+                    favorites.style.display = "block";
+
+                    self.favoriteList[book.id] = book;
+                    localStorage.setItem("favoriteList", JSON.stringify(self.favoriteList));
+                } else {
+                    favIcon.style.color = "white";
+                    favorites.setAttribute("data-type", "off");
+                    favorites.style.display = "none";
+                    favorites.addEventListener("mouseover", () => {
+                        favorites.style.display = "block";
+                    })
+
+                    delete self.favoriteList[book.id];
+
+                    localStorage.setItem("favoriteList", JSON.stringify(self.favoriteList));
+                }
+                // self.favoriteList[]
+            })
 
         });
         
     }
 
-    addPagination(num, currentPage) {
-    // remove existing pagination
-        const oldPagination = document.querySelector(".pagination");
-        if (oldPagination) {
-            oldPagination.remove();
-        }
-        // console.log(document.getElementByClassName('.pagination'))
-        const pagination = document.createElement("div");
-        pagination.setAttribute("class", "pagination");
-        for (let i = 1; i <= num; i++) {
-            let div = document.createElement("div");
-            div.setAttribute("class", "p-item");
-            div.style.padding = "5px 10px";
-            div.style.margin = "10px";
-            div.style.display = "inline-block";
-            div.style.cursor = "pointer";
-            div.style.background = "#a0cda0";
-        
-            div.textContent = i;
-            if (div.textContent == currentPage) {
-            div.style.background = "orange";
-            }
-            pagination.appendChild(div);
-        }
-    
-        document.body.appendChild(pagination);
-    
-        // add eventlistener for pagination
-        this.paginate();
-    }
-
-    paginate() {
-        let pagination = document.getElementsByClassName("p-item");
-        
-        Object.keys(pagination).forEach(key => {
-            pagination[key].addEventListener("click", e => {
-            getBooks(e.target.innerHTML);
-            });
-        });
-    }
 }
 
 const book = new Books();
