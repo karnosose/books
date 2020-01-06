@@ -3,18 +3,24 @@
 
 <head>
 	<title>Parcel Sandbox</title>
-	<meta charset="UTF-8" />
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./src/style.css">
 </head>
 
 <body>
-    <div class="container">
+    <header>
+        <div class="searchbox">
+            <input type="text" id="searchText">
+            <button id="search" type="submit" name="search">search</button>
+        </div>
+    </header>
+    <div id="main">
         <div id="books">
-            <input type="text" id="input">
-            <button id="btn" type="submit" name="search">search</button>
+            
         </div>
     </div>
-	<script src="src/index.js">
-	</script>
+    <footer></footer>
+	<script src="src/index.js"></script>
 </body>
 
 </html>
