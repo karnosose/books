@@ -16,7 +16,6 @@ header, footer{
 
 }
 .logo{
-    margin-right:auto;
     color:rgb(51, 49, 49);
     font-size:40px; 
     cursor:pointer;
@@ -48,6 +47,7 @@ header, footer, #main{
     margin:auto;
 }
 #searchText, #search{
+    font-size:30px;
     padding:5px 10px;
     border-radius: 5px;
     border:1px solid grey;
@@ -58,9 +58,6 @@ header, footer, #main{
 }
 #search{
     cursor:pointer;
-}
-#searchText{
-    width: 200px;
 }
 
 .book{
@@ -148,15 +145,20 @@ div#form {
     cursor: pointer;
     border-radius: 3px;
     border: 1px solid grey;
+    font-size:22px;
 }
 
 .username{
     margin: auto 15px;
+    font-size:25px;
 
 }
 
 @media screen and (max-width: 575px) {
     #main {
         display: block;
+    }
+    .logout{
+        height:auto;    
     }
 }
