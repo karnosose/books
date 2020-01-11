@@ -113,6 +113,11 @@ div#form {
     font-weight:normal;
     text-align: center;
     color: #0d1f19;
+    cursor: pointer;
+}
+
+.title:hover {
+    color:grey;
 }
 
 #name, #pass{
@@ -152,6 +157,19 @@ div#form {
     margin: auto 15px;
     font-size:25px;
 
+}
+
+#bookSample div{
+    float:left;
+}
+
+#bookSample {
+    padding:40px;
+    background:white;
+}
+
+#bookInfo{
+    margin-left:30px;
 }
 
 @media screen and (max-width: 575px) {

@@ -67,6 +67,35 @@ class Books {
         })
     }
 
+
+    simpleTemplate(book) {
+        const content = document.querySelector("#main");
+        content.textContent = "";
+
+        const bookSample = document.createElement("div");
+        bookSample.setAttribute("id", "bookSample");
+        const imgDiv = document.createElement("div");
+        imgDiv.setAttribute("id", "imgDiv");
+        const img = document.createElement("img");
+        img.src = "./src/images/simplebook.jpg";
+        const bookInfo = document.createElement("div");
+        bookInfo.setAttribute("id", "bookInfo");
+        const titleInfo = document.createElement("h3");
+        titleInfo.textContent = `title: ${book.title}`;
+        const authorInfo = document.createElement("p");
+        authorInfo.textContent = `author: ${book.author}`;
+        const dateInfo = document.createElement("p");
+        dateInfo.textContent = `published date: ${book.date}`;
+
+        content.appendChild(bookSample);
+        bookSample.appendChild(imgDiv);
+        bookSample.appendChild(bookInfo);
+        imgDiv.appendChild(img);
+        bookInfo.appendChild(titleInfo);
+        bookInfo.appendChild(authorInfo);
+        bookInfo.appendChild(dateInfo);
+    }
+
     createBooksDom(book){
         const self = this;
         const div = document.createElement("div");
@@ -86,8 +115,6 @@ class Books {
         const favIcon = document.createElement("span");
         favIcon.setAttribute("class", "favIcon");
         
-
-        // hidden.textContent = book.id;
         title.textContent = book.title;
         author.textContent = book.author;
         year.textContent = book.published;
@@ -125,6 +152,10 @@ class Books {
 
                 localStorage.setItem("favoriteList", JSON.stringify(self.favoriteList));
             }
+        });
+
+        title.addEventListener("click", e => {
+            self.simpleTemplate(book);
         })
     }
 
@@ -134,6 +165,7 @@ class Books {
         books.map(book => {
             self.createBooksDom(book);
         });
+
     }
 
     mainTemplate() {
