@@ -6,13 +6,30 @@ body {
     min-height: 100vh;
     flex-direction: column;
     margin: 0;
-    background-image: url("./images/body.jpg");
+    background-image: url("./images/books2.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+
   }
 header, footer{
     display: flex;
-    height: 20vh;
+    height: 29vh;
 
 }
+.logo{
+    margin-right:auto;
+    color:rgb(51, 49, 49);
+    font-size:40px; 
+    cursor:pointer;
+}
+
+.logo:hover {
+    color:rgb(73, 69, 69);
+}
+.logo p{
+    margin:0;
+}
+
 #main {
     display: flex;
     flex: 1;
