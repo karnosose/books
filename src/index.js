@@ -1,17 +1,26 @@
 class Books {
-    constructor(){
-        this.searchText = document.querySelector("#searchText");
-        this.search = document.querySelector("#search");
-        this.main = document.querySelector("#books");
-        this.logo = document.querySelector(".logo");
+    constructor(auth){
+        this.auth = auth;
+        this.container = document.querySelector("#container");
+        
+        if (this.auth.username === null) {
+        
+            this.auth.logInForm();
+        } else {
+            
+            this.mainTemplate(); 
+            this.auth.logOutListener();           
+            this.searchText = document.querySelector("#searchText");
+            this.search = document.querySelector("#search");
+            this.main = document.querySelector("#books");
+            this.logo = document.querySelector(".logo");
+            this.favoriteList = localStorage.getItem("favoriteList")
+            ? JSON.parse(localStorage.getItem("favoriteList"))
+            : {};
 
-        this.favoriteList = localStorage.getItem("favoriteList")
-        ? JSON.parse(localStorage.getItem("favoriteList"))
-        : {};
-
-        this.searchBooks();
-
-        this.getFavorites();
+            this.searchBooks();
+            this.getFavorites();
+        }
     }
 
     searchBooks(){
@@ -31,9 +40,6 @@ class Books {
         const books = r.docs;
         const bookItems = [];
         books.map(item => {
-            // let subject = item.subject
-            // ? item.subject.splice(0, 5).join(", ")
-            // : "no data";
             let published = item.publish_year ? item.publish_year[0] : "no data";
             let author = item.author_name ? item.author_name.join(", ") : "no data";
     
@@ -53,9 +59,10 @@ class Books {
     getFavorites(){
         const self = this;
         this.logo.addEventListener("click", () => {
-        const favorites = JSON.parse(localStorage.getItem("favoriteList"));
-        Object.keys(favorites).forEach(key => {
-            self.createBooksDom(favorites[key]);
+            self.main.textContent = "";
+            const favorites = JSON.parse(localStorage.getItem("favoriteList"));
+            Object.keys(favorites).forEach(key => {
+                self.createBooksDom(favorites[key]);
         })
         })
     }
@@ -89,7 +96,7 @@ class Books {
 
         if (book.id in this.favoriteList){
             favIcon.style.color = "#27624e";
-            favorites.style.display = "block";
+            favorites.classList.add('active');
         }
 
         favorites.appendChild(addFav);
@@ -103,20 +110,16 @@ class Books {
         favorites.addEventListener("click", e => {
             if (favorites.getAttribute("data-type") === "off"){
                 favIcon.style.color = "#27624e";
-                favorites.setAttribute("data-type", "on");
-                favorites.style.display = "block";
+                favorites.setAttribute("data-type", "on");            
+                favorites.classList.add('active');
+
 
                 self.favoriteList[book.id] = book;
                 localStorage.setItem("favoriteList", JSON.stringify(self.favoriteList));
             } else {
                 favIcon.style.color = "white";
                 favorites.setAttribute("data-type", "off");
-                favorites.addEventListener("mouseout", () => {
-                    favorites.style.display = "none";
-                })
-                favorites.addEventListener("mouseover", () => {
-                    favorites.style.display = "block";
-                })
+                favorites.classList.remove('active');
 
                 delete self.favoriteList[book.id];
 
@@ -133,6 +136,127 @@ class Books {
         });
     }
 
+    mainTemplate() {
+        this.container.textContent = "";
+        const header = document.createElement("header");
+        const main = document.createElement("div");
+        main.setAttribute("id", "main");
+        const logo = document.createElement("div");
+        logo.setAttribute("class", "logo");
+        const searchbox = document.createElement("div");
+        searchbox.setAttribute("class", "searchbox");
+        const books = document.createElement("div");
+        books.setAttribute("id", "books");
+        const p = document.createElement("p");
+        p.textContent = "favorite books";
+        const input = document.createElement("input");
+        input.setAttribute("id", "searchText");
+        input.type = "text";
+        const button = document.createElement("button");
+        button.setAttribute("id", "search");
+        button.textContent = "search books";
+        button.type = "submit";
+
+
+        const logOut = document.createElement("button");
+        logOut.setAttribute("class", "logout");
+        logOut.textContent = "log out";
+
+        const username = document.createElement("div");
+        username.setAttribute("class", "username");
+        username.textContent = this.auth.username;
+
+        
+        header.appendChild(logo);
+        header.appendChild(searchbox);
+        header.appendChild(username);
+        header.appendChild(logOut);
+
+        searchbox.appendChild(input);
+        searchbox.appendChild(button);
+        logo.appendChild(p);
+
+        main.appendChild(books);
+
+        this.container.appendChild(header);
+        this.container.appendChild(main);
+    }
+
+
 }
 
-const book = new Books();
+class Auth {
+    constructor() {
+        this.username = localStorage.getItem("auth")
+        ? JSON.parse(localStorage.getItem("auth")).username
+        : null;
+
+        this.form = document.createElement("form");
+        this.nameInput = document.createElement("input");
+        this.passInput = document.createElement("input");
+        this.button = document.createElement("input");
+        this.title = document.createElement("p");
+    }
+
+    logInListener() {
+        const self = this;
+        this.button.addEventListener("click", e => {
+            if (self.nameInput.value !== "" && self.passInput.value !== "") {
+                let auth = {
+                    username: self.nameInput.value
+                };
+                self.username = self.nameInput.value;
+                localStorage.setItem("auth", JSON.stringify(auth));
+                new Books(self);
+            } else {
+                const message = document.createElement("p");
+                message.setAttribute("class", "message");
+                message.textContent = "please fill all fields";
+                this.form.appendChild(message);
+            }
+        });
+    }
+
+    logOutListener() {
+        const self = this;
+        const logout = document.querySelector(".logout");
+        logout.addEventListener("click", () => {
+            localStorage.removeItem("auth");
+            self.username = null;
+            new Books(self);
+        })
+    }
+
+    logInForm() {
+        document.querySelector("#container").textContent = "";
+        const div = document.createElement("div");
+        div.setAttribute("id", "form");
+        this.title.setAttribute("class", "title");
+        this.title.textContent = "log in to find books";
+
+        this.nameInput.type = "text";
+        this.nameInput.setAttribute("id", "name")
+        this.nameInput.type = "text";
+        this.nameInput.setAttribute("placeholder", "name")
+        this.passInput.setAttribute("id", "pass");
+        this.passInput.type = "password";
+        this.passInput.setAttribute("placeholder", "password")
+        this.button.type = "button";
+        this.button.setAttribute("value", "log in")
+        this.button.setAttribute("id", "login");
+
+        container.appendChild(div);
+        div.appendChild(this.title);
+        div.appendChild(this.form);
+        this.form.appendChild(this.nameInput);
+        this.form.appendChild(this.passInput);
+        this.form.appendChild(this.button);
+
+        this.logInListener();
+    }
+}
+
+const auth = new Auth();
+
+const book = new Books(auth);
+
